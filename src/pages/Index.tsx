@@ -15,37 +15,101 @@ function FloatingBalloon({ emoji, style }: { emoji: string; style: React.CSSProp
 
 function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMenuOpen(false);
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }, 300);
   };
 
+  const NAV = [
+    ["catalog", "🎈 Каталог"],
+    ["sets", "🎁 Наборы"],
+    ["calc", "🧮 Калькулятор"],
+    ["delivery", "🚗 Доставка"],
+    ["reviews", "⭐ Отзывы"],
+    ["faq", "❓ FAQ"],
+    ["contacts", "📞 Контакты"],
+  ];
+
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-lg shadow-purple-200/40" : "bg-transparent"}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-        <div className="logo-text text-2xl font-black">🎈 ШарБум</div>
-        <nav className="hidden md:flex gap-6 text-sm font-semibold">
-          {[["catalog", "Каталог"], ["sets", "Наборы"], ["delivery", "Доставка"], ["reviews", "Отзывы"], ["faq", "FAQ"]].map(([id, label]) => (
-            <button key={id} onClick={() => scrollTo(id)} className="nav-link text-gray-600 hover:text-purple-600 transition-colors">
-              {label}
+    <>
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-lg shadow-purple-200/40" : "bg-transparent"}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+          <div className="logo-text text-2xl font-black">🎈 ШарБум</div>
+
+          <nav className="hidden md:flex gap-6 text-sm font-semibold">
+            {[["catalog", "Каталог"], ["sets", "Наборы"], ["delivery", "Доставка"], ["reviews", "Отзывы"], ["faq", "FAQ"]].map(([id, label]) => (
+              <button key={id} onClick={() => scrollTo(id)} className="nav-link text-gray-600 hover:text-purple-600 transition-colors">
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <a href="tel:+78001234567" className="hidden sm:flex items-center gap-1 font-bold text-purple-700 text-sm">
+              <Icon name="Phone" size={15} /> 8-800-123-45-67
+            </a>
+            <button onClick={() => scrollTo("contacts")} className="hidden md:block btn-glow text-sm font-bold px-4 py-2 rounded-full text-white">
+              Заказать
             </button>
-          ))}
-        </nav>
-        <div className="flex items-center gap-3">
-          <a href="tel:+78001234567" className="hidden sm:flex items-center gap-1 font-bold text-purple-700 text-sm">
-            <Icon name="Phone" size={15} /> 8-800-123-45-67
-          </a>
-          <button onClick={() => scrollTo("contacts")} className="btn-glow text-sm font-bold px-4 py-2 rounded-full text-white">
-            Заказать
-          </button>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden burger-btn flex flex-col justify-center items-center w-10 h-10 rounded-xl"
+              aria-label="Меню"
+            >
+              <span className={`burger-line ${menuOpen ? "rotate-45 translate-y-1.5" : ""}`} />
+              <span className={`burger-line my-1 ${menuOpen ? "opacity-0 scale-x-0" : ""}`} />
+              <span className={`burger-line ${menuOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      <div className={`mobile-menu-overlay md:hidden ${menuOpen ? "mobile-menu-open" : ""}`}>
+        <div className="mobile-menu-content">
+          <div className="flex items-center justify-between mb-8 px-2">
+            <div className="logo-text text-2xl font-black">🎈 ШарБум</div>
+            <button onClick={() => setMenuOpen(false)} className="burger-btn w-10 h-10 rounded-xl flex items-center justify-center text-2xl text-gray-500">
+              ✕
+            </button>
+          </div>
+          <nav className="flex flex-col gap-2">
+            {NAV.map(([id, label]) => (
+              <button
+                key={id}
+                onClick={() => scrollTo(id)}
+                className="mobile-nav-item text-left text-lg font-bold px-4 py-4 rounded-2xl text-gray-800 hover:bg-purple-50 hover:text-purple-700 transition-all"
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+          <div className="mt-8 space-y-3 px-2">
+            <a href="tel:+78001234567" className="flex items-center justify-center gap-2 font-black text-purple-700 text-lg bg-purple-50 py-4 rounded-2xl">
+              <Icon name="Phone" size={18} /> 8-800-123-45-67
+            </a>
+            <button onClick={() => scrollTo("contacts")} className="btn-glow w-full text-white font-black text-lg py-4 rounded-2xl">
+              🎈 Заказать шары
+            </button>
+          </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }
 
