@@ -546,6 +546,16 @@ export default function Index() {
       <FAQ />
       <Contacts />
       <Footer />
+      <a
+        href="https://t.me/chernikovpsiholog"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="tg-fab"
+        title="Написать в Telegram"
+      >
+        <span className="tg-fab-icon">✈️</span>
+        <span className="tg-fab-label">Написать нам</span>
+      </a>
     </div>
   );
 }
